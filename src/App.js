@@ -1,7 +1,7 @@
 import React from 'react';
 import Homepage from './pages/homepage/homepage.component';
 import './App.css';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 // Switch wll return only route with noting else
 // prevent from accidently render multiple components
 import ShopPage from './pages/shop/shop.component';
@@ -42,12 +42,27 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/' component={Homepage} />
           <Route path='/shop' component={ShopPage} />
-          <Route path='/signin' component={SignInAndSignUpPage} />
+          <Route
+            path='/signin'
+            render={() => {
+              return this.props.currentUser ? (
+                <Redirect to='/' />
+              ) : (
+                <SignInAndSignUpPage />
+              );
+            }}
+          />
         </Switch>
       </div>
     );
   }
 }
+
+const mapStateToProps = ({ user }) => {
+  return {
+    currentUser: user.currentUser,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -55,4 +70,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
